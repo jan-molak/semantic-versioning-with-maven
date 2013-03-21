@@ -84,8 +84,9 @@
                                     <message>Please set the semanticVersion property, such as "1.0.0"</message>
                                     <regex>^((\d+)\.(\d+)\.(\d+))$</regex>
                                     <regexMessage>
-                                        semanticVersion property [${semanticVersion}]
-                                        should follow the rules as outlined at http://semver.org
+    semanticVersion property [${semanticVersion}] should follow semantic versioning rules as outlined at http://semver.org/
+    For example:
+      1.2.0
                                     </regexMessage>
                                 </requireProperty>
                                 <requireProperty>
@@ -95,8 +96,14 @@
                                         ^(?:-([\dA-Za-z\-]+(?:\.[\dA-Za-z\-]+)*))?(?:\+([\dA-Za-z\-]+(?:\.[\dA-Za-z\-]+)*))?$
                                     </regex>
                                     <regexMessage>
-                                        buildVersion property [${buildVersion}]
-                                        should follow the rules as outlined at http://semver.org
+    buildVersion property [${buildVersion}] should follow semantic versioning rules as outlined at http://semver.org/
+    For example:
+      -rc.1
+      -rc.1+build
+      -rc.1+build.1
+      +build
+      +build.69
+      +build.69.b8f12d7
                                     </regexMessage>
                                 </requireProperty>
                             </rules>
