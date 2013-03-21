@@ -1,21 +1,110 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.smartcodeltd</groupId>
-  <artifactId>simple-webapp</artifactId>
-  <packaging>war</packaging>
-  <version>1.0-SNAPSHOT</version>
-  <name>simple-webapp Maven Webapp</name>
-  <url>http://maven.apache.org</url>
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
-  <build>
-    <finalName>simple-webapp</finalName>
-  </build>
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.smartcodeltd</groupId>
+    <artifactId>simple-webapp</artifactId>
+    <packaging>war</packaging>
+    <version>1.2.3-SNAPSHOT</version>
+    <name>simple-webapp Maven Webapp</name>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <semanticVersion>
+            ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}
+        </semanticVersion>
+        <buildVersion>+build</buildVersion>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>simple-webapp</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>parse-version</goal>
+                            <goal>maven-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                        <manifestEntries>
+                            <Build-Version>${semanticVersion}${buildVersion}</Build-Version>
+                            <Build-Qualifier>${parsedVersion.qualifier}</Build-Qualifier>
+                            <Build-Time>${maven.build.timestamp}</Build-Time>
+                            <Build-User>${user.name}</Build-User>
+                            <Build-Maven>Maven ${maven.version}</Build-Maven>
+                            <Build-Java>${java.version}</Build-Java>
+                            <Build-OS>${os.name}</Build-OS>
+                            <Build-Label>${project.version}</Build-Label>
+                            <Build-Path>${basedir}</Build-Path>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>enforce-property</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireProperty>
+                                    <property>semanticVersion</property>
+                                    <message>Please set the semanticVersion property, such as "1.0.0"</message>
+                                    <regex>^((\d+)\.(\d+)\.(\d+))$</regex>
+                                    <regexMessage>
+                                        semanticVersion property [${semanticVersion}]
+                                        should follow the rules as outlined at http://semver.org
+                                    </regexMessage>
+                                </requireProperty>
+                                <requireProperty>
+                                    <property>buildVersion</property>
+                                    <message>Please set the buildVersion property, such as "+build.1"</message>
+                                    <regex>
+                                        ^(?:-([\dA-Za-z\-]+(?:\.[\dA-Za-z\-]+)*))?(?:\+([\dA-Za-z\-]+(?:\.[\dA-Za-z\-]+)*))?$
+                                    </regex>
+                                    <regexMessage>
+                                        buildVersion property [${buildVersion}]
+                                        should follow the rules as outlined at http://semver.org
+                                    </regexMessage>
+                                </requireProperty>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
