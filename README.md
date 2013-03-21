@@ -74,3 +74,8 @@ which results in one of the following version strings:
  10 Build-Version: 1.2.3+build.69.b8f12d7
 ```
 
+Using VERSION_NUMBER in .jsp files
+----------------------------------
+
+This example also presents how the semantic version string can be included in .jsp files.
+Any occurence of a %VERSION_NUMBER% token is replaced with an actual version number during maven's prepare-package phase.
