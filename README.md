@@ -6,7 +6,7 @@ can be inserted into the build manifest file (META-INF/MANIFEST.MF).
 
 More info on semantic versioning can be found at http://semver.org
 
-To validate user-specified buildVersion I used a regular expression developed by @coolaj86 https://gist.github.com/coolaj86/3012865
+To validate user-specified buildVersion I used a regular expression developed by [AJ ONeal](https://github.com/coolaj86) https://gist.github.com/coolaj86/3012865
 
 Example usage
 -------------
