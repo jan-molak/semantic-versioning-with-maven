@@ -2,7 +2,8 @@ Semantic Versioning with Maven
 ==============================
 
 This very simple maven project demonstrates how semantically correct version number
-can be inserted into the build manifest file (META-INF/MANIFEST.MF).
+can be inserted into the build manifest file (META-INF/MANIFEST.MF),
+as well as displayed on .jsp pages.
 
 More info on semantic versioning can be found at http://semver.org
 
