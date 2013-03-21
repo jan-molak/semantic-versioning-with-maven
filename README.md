@@ -48,6 +48,7 @@ mvn clean package -D buildVersion=-rc.1
 mvn clean package -D buildVersion=-rc.1+build
 
 mvn clean package -D buildVersion=-rc.1+build.1
+
 mvn clean package -D buildVersion=+build
 
 mvn clean package -D buildVersion=+build.69
