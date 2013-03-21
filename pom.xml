@@ -18,15 +18,6 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
     <build>
         <finalName>simple-webapp</finalName>
 
@@ -44,10 +35,12 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.3</version>
+
                 <configuration>
                     <archive>
                         <manifest>
@@ -66,7 +59,67 @@
                         </manifestEntries>
                     </archive>
                 </configuration>
+
+                <executions>
+                    <!--
+                        Currently, the replacer plugin needs access to a target resource before it is packaged into an archive.
+                        However, standard WAR packaging does not expose web resources (anything under src/main/webapp)
+                        for use in other plugins and runs as a single execution. Fortunately, we can invoke war:exploded
+                        to copy these resources earlier in the build lifecycle so that they can be used by the maven-replacer-plugin.
+                        The standard package usage will then use the modified web resources when creating the WAR artifact.
+
+                        https://code.google.com/p/maven-replacer-plugin/wiki/UsageWithOtherPlugins
+                    -->
+                    <execution>
+                        <id>prepare-war</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exploded</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>default-war</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                        <configuration>
+                            <warSourceDirectory>${project.build.directory}/${project.build.finalName}</warSourceDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+
+            <!-- Replace any occurrence of %VERSION_NUMBER% with the actual version string -->
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.2</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--
+                        filesToInclude doesn't resolve ${project.build.directory}
+                        I'm using <basedir /> to avoid hard-coding "target"
+                    -->
+                    <basedir>${project.build.directory}</basedir>
+                    <filesToInclude>${project.build.finalName}/**/*.jsp</filesToInclude>
+                    <replacements>
+                        <replacement>
+                            <token>%VERSION_NUMBER%</token>
+                            <value>${semanticVersion}${buildVersion}</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+
+            <!-- Make sure that the buildVersion and semanticVersion arguments are valid -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
@@ -114,4 +167,13 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
